@@ -31,6 +31,23 @@ function ArtisanDatabase() {
   const [isFeedbackPaused, setIsFeedbackPaused] = useState(false);
   const feedbackScrollSpeed = 0.5;
 
+  // Country codes for dropdown
+  const countryCodes = [
+    { code: '+1', name: 'US', flag: '🇺🇸' },
+    { code: '+44', name: 'UK', flag: '🇬🇧' },
+    { code: '+91', name: 'IN', flag: '🇮🇳' },
+    { code: '+33', name: 'FR', flag: '🇫🇷' },
+    { code: '+49', name: 'DE', flag: '🇩🇪' },
+    { code: '+81', name: 'JP', flag: '🇯🇵' },
+    { code: '+86', name: 'CN', flag: '🇨🇳' },
+    { code: '+234', name: 'NG', flag: '🇳🇬' },
+    { code: '+27', name: 'ZA', flag: '🇿🇦' },
+    { code: '+20', name: 'EG', flag: '🇪🇬' },
+    // Add more country codes as needed
+  ];
+
+  const [selectedCountryCode, setSelectedCountryCode] = useState('+91');
+
   const specializations = [
     "Ornaments",
     "Idol Maker",
@@ -79,8 +96,20 @@ function ArtisanDatabase() {
 
   const handleSubmitGeneralFeedback = async (e) => {
     e.preventDefault();
+    // Validate phone number if entered
+    if (generalFeedbackForm.email && generalFeedbackForm.email.length !== 10) {
+      alert('Phone number must be exactly 10 digits.');
+      return;
+    }
     try {
-      const response = await axios.post(`${backendUrl}/api/feedback`, generalFeedbackForm);
+      // Merge country code with phone number if phone is provided
+      const mergedForm = {
+        ...generalFeedbackForm,
+        email: generalFeedbackForm.email
+          ? `${selectedCountryCode}${generalFeedbackForm.email}`
+          : '',
+      };
+      const response = await axios.post(`${backendUrl}/api/feedback`, mergedForm);
       if (response.status === 201) {
         setShowGeneralFeedbackModal(false);
         setGeneralFeedbackForm({
@@ -258,9 +287,54 @@ function ArtisanDatabase() {
   }
 
   if (error) {
+    // Show a friendly message if the error is due to no data or empty DB
+    const friendlyNoDataMessages = [
+      'No artisans found',
+      'No data',
+      'No artisans in database',
+      'No artisans available',
+      'No artisans are listed',
+      'No artisans',
+      'No records',
+      'No data found',
+      'No artisans are listed on the website yet.'
+    ];
+    const isNoData =
+      friendlyNoDataMessages.some(msg => error.toLowerCase().includes(msg.toLowerCase())) ||
+      error.toLowerCase().includes('empty') ||
+      error.toLowerCase().includes('not found') ||
+      error.toLowerCase().includes('no such table') ||
+      error.toLowerCase().includes('does not exist');
+
+    // Detect network/server errors
+    const isNetworkError =
+      error.toLowerCase().includes('network') ||
+      error.toLowerCase().includes('failed to fetch') ||
+      error.toLowerCase().includes('timeout') ||
+      error.toLowerCase().includes('500') ||
+      error.toLowerCase().includes('502') ||
+      error.toLowerCase().includes('503') ||
+      error.toLowerCase().includes('504') ||
+      error.toLowerCase().includes('gateway') ||
+      error.toLowerCase().includes('server') ||
+      error.toLowerCase().includes('connection refused') ||
+      error.toLowerCase().includes('not allowed') ||
+      error.toLowerCase().includes('cors');
+
+    let displayMessage = error;
+    let colorClass = 'text-red-600';
+    if (isNoData) {
+      displayMessage = 'No artisans are listed on the website yet.';
+      colorClass = 'text-gray-600';
+    } else if (isNetworkError) {
+      displayMessage = 'Unable to connect to the server. Please try again later.';
+      colorClass = 'text-red-600';
+    }
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-xl font-semibold text-red-600">{error}</div>
+        <div className={`text-xl font-semibold ${colorClass}`}>
+          {displayMessage}
+        </div>
       </div>
     );
   }
@@ -631,21 +705,37 @@ function ArtisanDatabase() {
                 >
                   Phone Number (Optional)
                 </label>
-                <input
-                  type="tel"
-                  id="email"
-                  minLength={10}
-                  maxLength={10}
-                  pattern="[0-9]*"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={generalFeedbackForm.email}
-                  onChange={(e) =>
-                    setGeneralFeedbackForm({
-                      ...generalFeedbackForm,
-                      email: e.target.value,
-                    })
-                  }
-                />
+                <div className="flex rounded-md overflow-hidden border border-gray-300 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
+                  <select
+                    value={selectedCountryCode}
+                    onChange={e => setSelectedCountryCode(e.target.value)}
+                    className="px-3 py-2 bg-gray-50 text-gray-700 border-none focus:ring-0"
+                  >
+                    {countryCodes.map(country => (
+                      <option key={country.code} value={country.code}>
+                        {country.flag} {country.code}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="tel"
+                    id="email"
+                    minLength={10}
+                    maxLength={10}
+                    pattern="[0-9]{10}"
+                    className="flex-1 px-3 py-2 border-none focus:ring-0"
+                    value={generalFeedbackForm.email}
+                    onChange={e => {
+                      // Only allow numbers
+                      const val = e.target.value.replace(/[^0-9]/g, '');
+                      setGeneralFeedbackForm({
+                        ...generalFeedbackForm,
+                        email: val,
+                      });
+                    }}
+                    placeholder="1234567890"
+                  />
+                </div>
               </div>
               <div>
                 <label
