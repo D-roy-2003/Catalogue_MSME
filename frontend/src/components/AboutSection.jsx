@@ -35,10 +35,13 @@ function AboutSection() {
 
         {/* Image (Right) */}
         <div className="flex justify-center w-full md:w-1/2">
-          <img
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/48f7141c56b657fd9d1b9ce97586536c2a3f3fda?placeholderIfAbsent=true"
+          <video
+            src="magrahat_video.mp4"
             alt="Silver filigree craftsmanship"
             className="w-full max-w-md rounded-3xl object-cover shadow-lg transition-all duration-300 hover:translate-y-[-5px] hover:shadow-xl"
+            loop
+            autoPlay
+            muted
           />
         </div>
       </div>

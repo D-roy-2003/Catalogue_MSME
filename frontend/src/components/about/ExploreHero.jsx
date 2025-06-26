@@ -8,18 +8,21 @@ function ExploreHero() {
       className="relative w-full h-screen bg-black overflow-hidden"
       aria-labelledby="hero-heading"
     >
-      {/* Background Image */}
-      <img
-        src="https://cdn.builder.io/api/v1/image/assets/TEMP/c1f5af19800ff277164143ef598d7ae646300feb?placeholderIfAbsent=true&apiKey=6db93a0a2eaa482cb9c3ed3428be7ade"
-        alt="Magrahat landscape"
-        className="absolute inset-0 w-full h-full object-cover"
+      {/* Background Video */}
+      <video
+        src="/magrahat_video.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover z-0"
       />
 
       {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="absolute inset-0 bg-black/50 z-10" />
 
       {/* Hero Text with Animation */}
-      <div className="relative z-10 flex flex-col items-start justify-center h-full px-6 md:px-20">
+      <div className="relative z-20 flex flex-col items-start justify-center h-full px-6 md:px-20">
         <motion.h1
           id="hero-heading"
           initial={{ opacity: 0, y: 50 }}
