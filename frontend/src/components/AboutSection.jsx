@@ -36,7 +36,7 @@ function AboutSection() {
         {/* Image (Right) */}
         <div className="flex justify-center w-full md:w-1/2">
           <video
-            src="magrahat_video.mp4"
+            src="magrahatvideo.mp4"
             alt="Silver filigree craftsmanship"
             className="w-full max-w-md rounded-3xl object-cover shadow-lg transition-all duration-300 hover:translate-y-[-5px] hover:shadow-xl"
             loop

@@ -10,7 +10,7 @@ function ExploreHero() {
     >
       {/* Background Video */}
       <video
-        src="/magrahat_video.mp4"
+        src="/magrahatvideo.mp4"
         autoPlay
         loop
         muted
