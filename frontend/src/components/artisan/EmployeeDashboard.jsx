@@ -498,11 +498,11 @@ function ProductForm({
     },
     description: product?.productDescription || "",
     mainImage: product?.image1
-      ? { preview: `${backendUrl}${product.image1}` }
+      ? { preview: product.image1 }
       : null,
     extraImages: [2, 3, 4, 5].map((i) =>
       product?.[`image${i}`]
-        ? { preview: `${backendUrl}${product[`image${i}`]}` }
+        ? { preview: product[`image${i}`] }
         : null
     ),
   });
@@ -523,19 +523,13 @@ function ProductForm({
         description: product.productDescription,
         mainImage: product.image1
           ? {
-              preview: `${backendUrl}${
-                product.image1.startsWith("/")
-                  ? product.image1
-                  : "/" + product.image1
-              }`,
+              preview: product.image1,
             }
           : null,
         extraImages: [2, 3, 4, 5].map((i) =>
           product[`image${i}`]
             ? {
-                preview: `${backendUrl}${
-                  product[`image${i}`].startsWith("/") ? "" : "/"
-                }${product[`image${i}`]}`,
+                preview: product[`image${i}`],
               }
             : null
         ),
@@ -650,7 +644,7 @@ function ProductForm({
       if (formData.mainImage?.file) {
         formPayload.append("image1", formData.mainImage.file);
       } else if (product?.image1) {
-        formPayload.append("image1", product.image1.split("/uploads/")[1]);
+        formPayload.append("image1", product.image1);
       }
       if (isUpdate && !isNaN(product.id)) {
         formPayload.append("id", product.id);
@@ -663,7 +657,7 @@ function ProductForm({
         } else if (product?.[fieldName]) {
           formPayload.append(
             fieldName,
-            product[fieldName].split("/uploads/")[1]
+            product[fieldName]
           );
         }
       });
@@ -767,7 +761,7 @@ function ProductForm({
               <img
                 src={
                   formData.mainImage?.preview ||
-                  `${backendUrl}${product.image1}`
+                  product.image1
                 }
                 alt="Main preview"
                 className="w-full aspect-square object-cover rounded bg-gray-100"
@@ -1086,7 +1080,7 @@ function EmployeeTable({ t, language, artisanProfile, onProfileUpdate }) {
                   />
                 ) : profile.profileImage ? (
                   <img
-                    src={`${backendUrl}${profile.profileImage}`}
+                    src={profile.profileImage}
                     alt={profile.name}
                     className="w-8 h-8 rounded-full object-cover"
                   />
@@ -1127,7 +1121,7 @@ function EmployeeTable({ t, language, artisanProfile, onProfileUpdate }) {
               </label>
             ) : profile.profileImage ? (
               <img
-                src={`${backendUrl}${profile.profileImage}`}
+                src={profile.profileImage}
                 alt={profile.name}
                 className="w-8 h-8 rounded-full object-cover"
               />

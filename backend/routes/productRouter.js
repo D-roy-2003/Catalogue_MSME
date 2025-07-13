@@ -5,6 +5,7 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 import { verifyToken } from "./authRouter.js"; // <-- same middleware
+import { supabase } from "../lib/db.js";
 
 const router = express.Router();
 
@@ -12,20 +13,22 @@ const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Multer config
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(__dirname, "../uploads/")),
-  filename: (req, file, cb) =>
-    cb(
-      null,
-      Date.now() +
-        "-" +
-        Math.round(Math.random() * 1e9) +
-        "-" +
-        file.originalname
-    ),
-});
-const upload = multer({ storage });
+// Helper to upload a file buffer to Supabase Storage and return the public URL
+async function uploadToSupabase(file, fieldName) {
+  if (!file) return null;
+  const ext = file.originalname.split('.').pop();
+  const filePath = `products/${Date.now()}_${Math.round(Math.random() * 1e9)}_${fieldName}.${ext}`;
+  const { data, error } = await supabase.storage.from('magrahat').upload(filePath, file.buffer, {
+    contentType: file.mimetype,
+    upsert: false,
+  });
+  if (error) throw new Error(error.message);
+  // Get public URL
+  const { data: publicUrlData } = supabase.storage.from('magrahat').getPublicUrl(filePath);
+  return publicUrlData.publicUrl;
+}
+
+const upload = multer();
 
 // POST /products — one slot at a time, ≤3 per artisan
 router.post(
@@ -64,7 +67,6 @@ router.post(
         [artisanId]
       );
 
-      // FIX: Use cnt directly instead of existingProducts
       const productId = `${artisanId}${String.fromCharCode(65 + cnt)}`;
 
       if (cnt >= 3) {
@@ -73,27 +75,18 @@ router.post(
           .json({ message: "Maximum of 3 products allowed." });
       }
 
-      // file paths
-      const image1 = req.files.image1?.[0].filename
-        ? `/uploads/${req.files.image1[0].filename}`
-        : null;
-      const image2 = req.files.image2?.[0].filename
-        ? `/uploads/${req.files.image2[0].filename}`
-        : null;
-      const image3 = req.files.image3?.[0].filename
-        ? `/uploads/${req.files.image3[0].filename}`
-        : null;
-      const image4 = req.files.image4?.[0].filename
-        ? `/uploads/${req.files.image4[0].filename}`
-        : null;
-      const image5 = req.files.image5?.[0].filename
-        ? `/uploads/${req.files.image5[0].filename}`
-        : null;
-      // Generate productId
-      const [existingProducts] = await db.query(
-        "SELECT COUNT(*) AS cnt FROM products WHERE artisanId = ?",
-        [artisanId]
+      // Upload images to Supabase
+      const imageFields = ["image1", "image2", "image3", "image4", "image5"];
+      const imageUrls = await Promise.all(
+        imageFields.map(async (field) => {
+          const file = req.files[field]?.[0];
+          if (file) {
+            return await uploadToSupabase(file, field);
+          }
+          return null;
+        })
       );
+
       const [result] = await db.query(
         `INSERT INTO products (
            artisanId, productId, productName, productPrice, material,
@@ -110,13 +103,13 @@ router.post(
           height || null,
           width || null,
           weight || null,
-          certification || null, // New field
-          finish || null, // New field
-          image1,
-          image2,
-          image3,
-          image4,
-          image5,
+          certification || null,
+          finish || null,
+          imageUrls[0],
+          imageUrls[1],
+          imageUrls[2],
+          imageUrls[3],
+          imageUrls[4],
           productDescription || null,
           category || null,
         ]
@@ -173,34 +166,17 @@ router.put(
         category,
       } = req.body;
 
-      // Handle file updates (keep existing if no new file)
-      const updateData = {
-        productName: productName || product.productName,
-        productPrice: productPrice || product.productPrice,
-        material: material || product.material,
-        height: height || product.height,
-        width: width || product.width,
-        weight: weight || product.weight,
-        productDescription: productDescription || product.productDescription,
-        certification: certification || product.certification,
-        finish: finish || product.finish,
-        category: category || product.category,
-        image1: req.files.image1?.[0]?.filename
-          ? `/uploads/${req.files.image1[0].filename}`
-          : product.image1,
-        image2: req.files.image2?.[0]?.filename
-          ? `/uploads/${req.files.image2[0].filename}`
-          : product.image2,
-        image3: req.files.image3?.[0]?.filename
-          ? `/uploads/${req.files.image3[0].filename}`
-          : product.image3,
-        image4: req.files.image4?.[0]?.filename
-          ? `/uploads/${req.files.image4[0].filename}`
-          : product.image4,
-        image5: req.files.image5?.[0]?.filename
-          ? `/uploads/${req.files.image5[0].filename}`
-          : product.image5,
-      };
+      // Upload new images if provided, else keep existing
+      const imageFields = ["image1", "image2", "image3", "image4", "image5"];
+      const imageUrls = await Promise.all(
+        imageFields.map(async (field, idx) => {
+          const file = req.files[field]?.[0];
+          if (file) {
+            return await uploadToSupabase(file, field);
+          }
+          return product[`image${idx + 1}`];
+        })
+      );
 
       await db.query(
         `UPDATE products SET 
@@ -211,21 +187,21 @@ router.put(
           category = ?
          WHERE id = ?`,
         [
-          updateData.productName,
-          updateData.productPrice,
-          updateData.material,
-          updateData.height,
-          updateData.width,
-          updateData.weight,
-          updateData.certification, // New field
-          updateData.finish, // New field
-          updateData.image1,
-          updateData.image2,
-          updateData.image3,
-          updateData.image4,
-          updateData.image5,
-          updateData.productDescription,
-          updateData.category,
+          productName || product.productName,
+          productPrice || product.productPrice,
+          material || product.material,
+          height || product.height,
+          width || product.width,
+          weight || product.weight,
+          certification || product.certification,
+          finish || product.finish,
+          imageUrls[0],
+          imageUrls[1],
+          imageUrls[2],
+          imageUrls[3],
+          imageUrls[4],
+          productDescription || product.productDescription,
+          category || product.category,
           productId,
         ]
       );

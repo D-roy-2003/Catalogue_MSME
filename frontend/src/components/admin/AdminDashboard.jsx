@@ -74,7 +74,7 @@ const fetchAdminData = async () => {
         phoneNumber: response.data.phoneNumber,
         emailId: response.data.emailId,
         profileImage: response.data.profileImage 
-          ? `${backendUrl}${response.data.profileImage}`
+          ? response.data.profileImage 
           : null
       });
     }
@@ -112,7 +112,7 @@ const fetchArtisanProducts = async (artisanId) => {
     const mappedProducts = products.map(p => ({
       ...p,
       image1: p.image1 
-        ? `${backendUrl}${p.image1}` 
+        ? p.image1 
         : (p.image ? `${backendUrl}${p.image}` : "/placeholder-image.jpg"),
       productName: p.productName || p.name || "Untitled Product",
       productDescription: p.productDescription || p.description || "No description available",
@@ -186,7 +186,7 @@ const fetchArtisanProducts = async (artisanId) => {
         ...prev,
         ...response.data,
         profileImage: response.data.profileImage 
-          ? `${backendUrl}${response.data.profileImage}`
+          ? response.data.profileImage 
           : prev.profileImage
       }));
       setIsEditing(false);
@@ -536,9 +536,7 @@ return (
         <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
           {adminData.profileImage ? (
             <img 
-              src={typeof adminData.profileImage === "string" 
-                ? adminData.profileImage 
-                : URL.createObjectURL(adminData.profileImage)} 
+              src={adminData.profileImage} 
               alt="Admin" 
               className="w-full h-full object-cover"
             />
@@ -707,9 +705,7 @@ return (
                     <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
                       {adminData.profileImage ? (
                         <img 
-                          src={typeof adminData.profileImage === "string" 
-                            ? adminData.profileImage 
-                            : URL.createObjectURL(adminData.profileImage)} 
+                          src={adminData.profileImage} 
                           alt="Admin" 
                           className="w-full h-full object-cover"
                         />

@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import bcrypt from "bcrypt";
+import { createClient } from '@supabase/supabase-js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -152,6 +153,12 @@ async function addDefaultAdmin() {
     console.log("Default admin created (only required account)");
   }
 }
+
+// Initialize Supabase client
+export const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_ANON_KEY
+);
 
 process.on("unhandledRejection", (err) => {
   if (err.code === "PROTOCOL_CONNECTION_LOST") {

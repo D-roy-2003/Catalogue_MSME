@@ -52,9 +52,7 @@ router.get("/artisans/:artisanId", async (req, res) => {
 
     res.json({
       ...artisans[0],
-      profileImageUrl: artisans[0].profileImage
-        ? `${process.env.BACKEND_URL}/uploads/${artisans[0].profileImage}`
-        : null,
+      profileImageUrl: artisans[0].profileImage || null,
     });
   } catch (error) {
     res.status(500).json({ message: "Server error" });

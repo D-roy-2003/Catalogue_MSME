@@ -36,7 +36,7 @@ function IndividualProduct() {
         setProduct({
           ...productRes.data,
           images: productRes.data.images || ["/placeholder-product.jpg"],
-          profileImageUrl: artisanData?.profileImage ? `${backendUrl}${artisanData.profileImage}` : null,
+          profileImageUrl: artisanData?.profileImage || null,
           username: artisanData?.username || "",
           PhoneNumber: artisanData?.PhoneNumber || "",
         });

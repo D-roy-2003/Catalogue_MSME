@@ -33,3 +33,5 @@ employeedashboard.jsx
 *.sw?.env
 
 uploads
+
+.cursor

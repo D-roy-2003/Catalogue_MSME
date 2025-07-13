@@ -1,9 +1,8 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import fs from "fs"; // Added for directory creation
-import path from "path";
 import { fileURLToPath } from "url";
+import path from "path";
 import authRouter from "./routes/authRouter.js";
 import productRouter from "./routes/productRouter.js";
 import individualProductRouter from "./routes/individualProductRouter.js";
@@ -23,14 +22,7 @@ const port = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 🚀 AUTOMATIC UPLOADS DIRECTORY CREATION 🚀
-const uploadsDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-  console.log("✅ Created uploads directory");
-} else {
-  console.log("📁 Uploads directory already exists");
-}
+// Remove all fs and /uploads logic. Do not create or serve /uploads directory.
 
 // Initialize database connection
 connectToDatabase().catch((err) => {
@@ -50,9 +42,6 @@ app.use(
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-
-// Serve static files from /uploads folder
-app.use("/uploads", express.static(uploadsDir)); // Use the variable
 
 // Routes
 app.use("/auth", authRouter);

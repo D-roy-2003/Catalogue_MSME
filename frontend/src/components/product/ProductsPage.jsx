@@ -322,145 +322,62 @@ function Sidebar({
   );
 }
 
+// ArtisanSection
 function ArtisanSection({ artisan, index }) {
-  // Safe data access with fallbacks
   const username = artisan?.username || "Artisan";
   const products = artisan?.products || [];
   const initial = username[0]?.toUpperCase() || "A";
   const color = `hsl(${index * 60}, 70%, 30%)`;
-
-  const profileImageUrl = artisan.profileImage
-    ? `${backendUrl}${artisan.profileImage}`
-    : null;
-
+  const profileImageUrl = artisan.profileImage || null;
   return (
-    <section
-      className="bg-white p-6 rounded-xl shadow-sm mb-8 transition-all duration-300 hover:shadow-md"
-      style={{ borderLeft: `4px solid ${color}` }}
-    >
-      {/* Artisan Header */}
+    <section className="bg-white p-6 rounded-xl shadow-sm mb-8 transition-all duration-300 hover:shadow-md" style={{ borderLeft: `4px solid ${color}` }}>
       <div className="flex items-center gap-4 mb-6">
         {profileImageUrl ? (
-          <img
-            src={profileImageUrl}
-            alt={username}
-            className="w-12 h-12 rounded-full object-cover border-2"
-            style={{ borderColor: color }}
-          />
+          <img src={profileImageUrl} alt={username} className="w-12 h-12 rounded-full object-cover border-2" style={{ borderColor: color }} />
         ) : (
-          <div
-            className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center border-2"
-            style={{ borderColor: color }}
-          >
-            <span className="text-xl font-bold" style={{ color }}>
-              {initial}
-            </span>
+          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center border-2" style={{ borderColor: color }}>
+            <span className="text-xl font-bold" style={{ color }}>{initial}</span>
           </div>
         )}
         <div>
           <h2 className="text-2xl font-bold text-gray-800">{username}</h2>
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <span>Listed Products:</span>
-            <span
-              className="px-2 py-1 rounded-full"
-              style={{ backgroundColor: `${color}20`, color }}
-            >
-              {products.length} items
-            </span>
+            <span className="px-2 py-1 rounded-full" style={{ backgroundColor: `${color}20`, color }}>{products.length} items</span>
           </div>
         </div>
       </div>
-
-      {/* Products Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {products.map((product) => (
-          <ProductCard
-            key={product?.id || Math.random()}
-            product={product}
-            color={color}
-          />
+          <ProductCard key={product?.id || Math.random()} product={product} color={color} />
         ))}
       </div>
     </section>
   );
 }
 
-//PRODUCT CARD COMPONENT
+// ProductCard
 function ProductCard({ product, color = "#4f46e5" }) {
   const [isHovered, setIsHovered] = useState(false);
-
   return (
-    <div
-      className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 relative"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        transform: isHovered ? "translateY(-4px)" : "none",
-        borderTop: `3px solid ${color}`,
-      }}
-    >
-      {/* Product Image */}
+    <div className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 relative" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} style={{ transform: isHovered ? "translateY(-4px)" : "none", borderTop: `3px solid ${color}` }}>
       <div className="relative h-64 overflow-hidden">
-        <img
-          src={`${backendUrl}${product.image1}`}
-          alt={product.productName}
-          className={`w-full h-full object-cover transition-transform duration-300 ${
-            isHovered ? "scale-105" : "scale-100"
-          }`}
-        />
-
-        {/* Hover Overlay */}
-        <div
-          className="absolute inset-0 bg-black/10 flex items-center justify-center transition-opacity duration-300"
-          style={{ opacity: isHovered ? 1 : 0 }}
-        >
-          <Link
-            to={`/products/${product.id}`}
-            className="px-4 py-2 bg-white rounded-md shadow-md flex items-center gap-2"
-            style={{ color }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-              <path
-                fillRule="evenodd"
-                d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                clipRule="evenodd"
-              />
-            </svg>
+        <img src={product.image1} alt={product.productName} className={`w-full h-full object-cover transition-transform duration-300 ${isHovered ? 'scale-105' : 'scale-100'}`} />
+        <div className="absolute inset-0 bg-black/10 flex items-center justify-center transition-opacity duration-300" style={{ opacity: isHovered ? 1 : 0 }}>
+          <Link to={`/products/${product.id}`} className="px-4 py-2 bg-white rounded-md shadow-md flex items-center gap-2" style={{ color }}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" /></svg>
             View Details
           </Link>
         </div>
       </div>
-
-      {/* Product Details */}
       <div className="p-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">
-          {product.productName}
-        </h3>
-        <p className="text-gray-600 text-sm line-clamp-3 mb-4">
-          {product.productDescription}
-        </p>
-
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">{product.productName}</h3>
+        <p className="text-gray-600 text-sm line-clamp-3 mb-4">{product.productDescription}</p>
         <div className="flex justify-between items-center">
-          <span className="text-xl font-bold" style={{ color }}>
-            ₹{Number(product.productPrice).toLocaleString("en-IN")}
-          </span>
+          <span className="text-xl font-bold" style={{ color }}>₹{Number(product.productPrice).toLocaleString("en-IN")}</span>
           <div className="flex flex-col items-end gap-2">
-            {product.listed_at && (
-              <span className="text-xs text-gray-500">
-                Listed: {new Date(product.listed_at).toLocaleDateString()}
-              </span>
-            )}
-            {product.category && (
-              <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                {product.category}
-              </span>
-            )}
+            {product.listed_at && (<span className="text-xs text-gray-500">Listed: {new Date(product.listed_at).toLocaleDateString()}</span>)}
+            {product.category && (<span className="text-xs bg-gray-100 px-2 py-1 rounded">{product.category}</span>)}
           </div>
         </div>
       </div>
@@ -468,90 +385,50 @@ function ProductCard({ product, color = "#4f46e5" }) {
   );
 }
 
-// FILTERED PRODUCTS GRID COMPONENT
+// FilteredProductsGrid
 function FilteredProductsGrid({ products, resetFilters }) {
   if (products.length === 0) {
     return (
       <div className="text-center py-12">
-        <h3 className="text-xl text-gray-600">
-          No products match your filters
-        </h3>
-        <button
-          onClick={resetFilters}
-          className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md"
-        >
-          Clear Filters
-        </button>
+        <h3 className="text-xl text-gray-600">No products match your filters</h3>
+        <button onClick={resetFilters} className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md">Clear Filters</button>
       </div>
     );
   }
-
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+        {products.map((product) => (<ProductCard key={product.id} product={product} />))}
       </div>
     </div>
   );
 }
 
-//PRODUCT GRID COMPONENT
+// ProductGrid
 function ProductGrid({ refreshTrigger, filters, resetFilters }) {
   const [artisans, setArtisans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [allProducts, setAllProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isFiltered, setIsFiltered] = useState(false);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         const artisansRes = await axios.get(`${backendUrl}/public/artisans`);
-
-        // Filter out demo artisans and include profileImage
-        const realArtisans = artisansRes.data.filter(
-          (artisan) => ![1, 2].includes(artisan.artisanId)
-        );
-
+        const realArtisans = artisansRes.data.filter((artisan) => ![1, 2].includes(artisan.artisanId));
         const artisanPromises = realArtisans.map(async (artisan) => {
           try {
-            const productsRes = await axios.get(
-              `${backendUrl}/public/artisans/${artisan.artisanId}/products`
-            );
-            // Filter out demo products
-            const realProducts = productsRes.data.filter(
-              (product) => ![1, 2].includes(product.artisanId)
-            );
-            return {
-              ...artisan,
-              profileImage: artisan.profileImage,
-              products: realProducts,
-            };
+            const productsRes = await axios.get(`${backendUrl}/public/artisans/${artisan.artisanId}/products`);
+            const realProducts = productsRes.data.filter((product) => ![1, 2].includes(product.artisanId));
+            return { ...artisan, profileImage: artisan.profileImage, products: realProducts };
           } catch (error) {
-            console.error(
-              `Error fetching products for ${artisan.artisanId}:`,
-              error
-            );
+            console.error(`Error fetching products for ${artisan.artisanId}:`, error);
             return null;
           }
         });
-
-        const artisansWithProducts = (
-          await Promise.all(artisanPromises)
-        ).filter((artisan) => artisan !== null && artisan.products.length > 0);
-
-        // Flatten all products for filtering
-        const allProducts = artisansWithProducts.flatMap((artisan) =>
-          artisan.products.map((product) => ({
-            ...product,
-            artisanName: artisan.username,
-            artisanId: artisan.artisanId,
-          }))
-        );
-
+        const artisansWithProducts = (await Promise.all(artisanPromises)).filter((artisan) => artisan !== null && artisan.products.length > 0);
+        const allProducts = artisansWithProducts.flatMap((artisan) => artisan.products.map((product) => ({ ...product, artisanName: artisan.username, artisanId: artisan.artisanId })));
         setArtisans(artisansWithProducts);
         setAllProducts(allProducts);
       } catch (error) {
@@ -562,166 +439,69 @@ function ProductGrid({ refreshTrigger, filters, resetFilters }) {
     };
     fetchData();
   }, [refreshTrigger]);
-
-  // Apply filters when filters change
   useEffect(() => {
-    const areFiltersActive =
-      filters.categories.length > 0 ||
-      filters.materials.length > 0 ||
-      filters.priceRange < 100000 ||
-      (filters.searchQuery && filters.searchQuery.trim() !== "");
-
+    const areFiltersActive = filters.categories.length > 0 || filters.materials.length > 0 || filters.priceRange < 100000 || (filters.searchQuery && filters.searchQuery.trim() !== "");
     if (!areFiltersActive) {
       setIsFiltered(false);
       return;
     }
-
     setIsFiltered(true);
     const filtered = allProducts.filter((product) => {
-      // Category filter - use the product's category field
       if (filters.categories.length > 0) {
         if (filters.categories.includes("Others")) {
           let categoryMatches = false;
-          if (product.category === "Others") {
-            categoryMatches = true;
-          }
-          const otherSelectedCategories = filters.categories.filter(
-            (c) => c !== "Others"
-          );
-          if (
-            otherSelectedCategories.length > 0 &&
-            otherSelectedCategories.includes(product.category)
-          ) {
-            categoryMatches = true;
-          }
-          if (!categoryMatches) {
-            return false;
-          }
+          if (product.category === "Others") categoryMatches = true;
+          const otherSelectedCategories = filters.categories.filter((c) => c !== "Others");
+          if (otherSelectedCategories.length > 0 && otherSelectedCategories.includes(product.category)) categoryMatches = true;
+          if (!categoryMatches) return false;
         } else {
-          if (!filters.categories.includes(product.category)) {
-            return false;
-          }
+          if (!filters.categories.includes(product.category)) return false;
         }
       }
-
-      // Material filter - FIXED
       if (filters.materials.length > 0) {
-        console.log(
-          "Material filter active. filters.materials:",
-          filters.materials
-        );
-        console.log("Current product material:", product.material);
         const standardBackendMaterials = ["Silver", "Gold", "Mixed Metals"];
         if (filters.materials.includes("Others")) {
           let materialMatches = false;
-          if (!standardBackendMaterials.includes(product.material)) {
-            materialMatches = true;
-            console.log(
-              "Product material is not standard, materialMatches true (for Others)"
-            );
-          }
-          const otherSelectedMaterials = filters.materials.filter(
-            (m) => m !== "Others"
-          );
-          if (
-            otherSelectedMaterials.length > 0 &&
-            otherSelectedMaterials.includes(product.material)
-          ) {
-            materialMatches = true;
-            console.log("Product material matches other selected materials.");
-          }
-          if (!materialMatches) {
-            console.log("Material filter: No match, returning false.");
-            return false;
-          }
+          if (!standardBackendMaterials.includes(product.material)) materialMatches = true;
+          const otherSelectedMaterials = filters.materials.filter((m) => m !== "Others");
+          if (otherSelectedMaterials.length > 0 && otherSelectedMaterials.includes(product.material)) materialMatches = true;
+          if (!materialMatches) return false;
         } else {
-          if (!filters.materials.includes(product.material)) {
-            console.log(
-              "Material filter: Specific material not included, returning false."
-            );
-            return false;
-          }
+          if (!filters.materials.includes(product.material)) return false;
         }
-        console.log("Material filter: Match, returning true.");
       }
-
-      // Price filter - only apply if user changed from default
-      if (
-        filters.priceRange < 100000 &&
-        product.productPrice > filters.priceRange
-      ) {
-        return false;
-      }
-
-      // Search filter - search in name, description, and artisan name
+      if (filters.priceRange < 100000 && product.productPrice > filters.priceRange) return false;
       if (filters.searchQuery) {
         const lowerQuery = filters.searchQuery.toLowerCase();
-        if (
-          !product.productName.toLowerCase().includes(lowerQuery) &&
-          !product.productDescription.toLowerCase().includes(lowerQuery) &&
-          !product.artisanName.toLowerCase().includes(lowerQuery)
-        ) {
-          return false;
-        }
+        if (!product.productName.toLowerCase().includes(lowerQuery) && !product.productDescription.toLowerCase().includes(lowerQuery) && !product.artisanName.toLowerCase().includes(lowerQuery)) return false;
       }
-
       return true;
     });
-
     setFilteredProducts(filtered);
   }, [filters, allProducts]);
-
   if (loading) return <div className="text-center p-8">Loading...</div>;
-
   if (isFiltered) {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-800">
-            Filtered Products ({filteredProducts.length})
-          </h2>
-          <button
-            onClick={resetFilters}
-            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-colors flex items-center gap-2"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
+          <h2 className="text-xl font-bold text-gray-800">Filtered Products ({filteredProducts.length})</h2>
+          <button onClick={resetFilters} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-colors flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" /></svg>
             Clear Filters
           </button>
         </div>
-        <FilteredProductsGrid
-          products={filteredProducts}
-          resetFilters={resetFilters}
-        />
+        <FilteredProductsGrid products={filteredProducts} resetFilters={resetFilters} />
       </div>
     );
   }
-
   return (
     <div className="space-y-12">
       {artisans.map((artisan, index) => (
-        <ArtisanSection
-          key={artisan.artisanId}
-          artisan={artisan}
-          index={index}
-        />
+        <ArtisanSection key={artisan.artisanId} artisan={artisan} index={index} />
       ))}
-
       {!loading && artisans.length === 0 && (
         <div className="text-center py-12">
-          <h3 className="text-xl text-gray-600">
-            No artisans have listed their products yet
-          </h3>
+          <h3 className="text-xl text-gray-600">No artisans have listed their products yet</h3>
         </div>
       )}
     </div>
@@ -766,7 +546,6 @@ function ProductsPage() {
                 Discover our curated collection of quality items
               </p>
             </div>
-
             {/* Search Form - Moved to top right */}
             <div className="w-full md:w-auto">
               <div className="relative">
@@ -792,27 +571,19 @@ function ProductsPage() {
               </div>
             </div>
           </div>
-
-          {/* REMOVED USELESS BUTTONS */}
-
           {/* Products Layout */}
           <div className="flex flex-col md:flex-row gap-8">
             {/* Sidebar - Mobile */}
             <div
-              className={`${
-                filterOpen ? "block" : "hidden"
-              } md:hidden w-full bg-white p-4 rounded-lg shadow-sm mb-4`}
+              className={`${filterOpen ? "block" : "hidden"} md:hidden w-full bg-white p-4 rounded-lg shadow-sm mb-4`}
             >
               <Sidebar
                 activeFilters={filters}
                 setActiveFilters={setFilters}
                 priceRange={filters.priceRange}
-                setPriceRange={(value) =>
-                  setFilters((prev) => ({ ...prev, priceRange: value }))
-                }
+                setPriceRange={(value) => setFilters((prev) => ({ ...prev, priceRange: value }))}
               />
             </div>
-
             {/* Sidebar - Desktop */}
             <div className="hidden md:block w-full md:w-1/4 lg:w-1/5 flex-shrink-0">
               <div className="sticky top-8">
@@ -821,14 +592,11 @@ function ProductsPage() {
                     activeFilters={filters}
                     setActiveFilters={setFilters}
                     priceRange={filters.priceRange}
-                    setPriceRange={(value) =>
-                      setFilters((prev) => ({ ...prev, priceRange: value }))
-                    }
+                    setPriceRange={(value) => setFilters((prev) => ({ ...prev, priceRange: value }))}
                   />
                 </div>
               </div>
             </div>
-
             {/* Product Grid */}
             <div className="w-full md:w-3/4 lg:w-4/5">
               <div className="bg-white rounded-lg shadow-sm p-6">
@@ -840,7 +608,6 @@ function ProductsPage() {
               </div>
             </div>
           </div>
-
           {/* Promotional Banner */}
           <div className="mt-16 mb-8">
             <div className="bg-gradient-to-r from-black via-gray-900 to-black rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">

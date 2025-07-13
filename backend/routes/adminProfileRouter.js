@@ -3,17 +3,25 @@ import { connectToDatabase } from "../lib/db.js";
 import { verifyToken } from "./authRouter.js";
 import multer from "multer";
 import bcrypt from "bcrypt";
+import { supabase } from "../lib/db.js";
 
 const router = express.Router();
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
-});
-const upload = multer({ storage });
+// Remove Multer disk storage for admin profile images, use in-memory storage
+const upload = multer();
+
+// Helper to upload admin profile image to Supabase
+async function uploadAdminProfileToSupabase(file) {
+  if (!file) return null;
+  const ext = file.originalname.split('.').pop();
+  const filePath = `admin_profile/${Date.now()}_${Math.round(Math.random() * 1e9)}.${ext}`;
+  const { data, error } = await supabase.storage.from('magrahat').upload(filePath, file.buffer, {
+    contentType: file.mimetype,
+    upsert: false,
+  });
+  if (error) throw new Error(error.message);
+  const { data: publicUrlData } = supabase.storage.from('magrahat').getPublicUrl(filePath);
+  return publicUrlData.publicUrl;
+}
 
 // Get admin profile
 router.get('/profile', verifyToken, async (req, res) => {
@@ -46,20 +54,21 @@ router.put('/profile', verifyToken, upload.single('profileImage'), async (req, r
   try {
     const db = await connectToDatabase();
     const { name, address, phoneNumber, emailId } = req.body;
-    
     const [currentAdmin] = await db.query(
       'SELECT * FROM admindata WHERE adminId = ?',
       [req.adminId]
     );
-
+    let profileimage = currentAdmin[0].profileimage;
+    if (req.file) {
+      profileimage = await uploadAdminProfileToSupabase(req.file);
+    }
     const updateData = {
       name: name || currentAdmin[0].name,
       address: address || currentAdmin[0].address,
       phonenumber: phoneNumber || currentAdmin[0].phonenumber,
       email: emailId || currentAdmin[0].email,
-      profileimage: req.file ? `/uploads/${req.file.filename}` : currentAdmin[0].profileimage
+      profileimage
     };
-
     await db.query(
       `UPDATE admindata SET 
         name = ?,
@@ -77,7 +86,6 @@ router.put('/profile', verifyToken, upload.single('profileImage'), async (req, r
         req.adminId
       ]
     );
-
     res.json({
       success: true,
       message: 'Profile updated successfully',
@@ -87,7 +95,6 @@ router.put('/profile', verifyToken, upload.single('profileImage'), async (req, r
       address: updateData.address,
       profileimage: updateData.profileimage
     });
-    
   } catch (error) {
     console.error('Update error:', error);
     res.status(500).json({ 

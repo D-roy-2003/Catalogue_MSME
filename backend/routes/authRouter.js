@@ -5,26 +5,30 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import multer from "multer";
+const uploadProfile = multer();
 import path from "path";
 import { fileURLToPath } from "url";
+import { supabase } from "../lib/db.js";
 
 const router = express.Router();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const profileStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../uploads/"));
-  },
-  filename: (req, file, cb) => {
-    cb(null, `profile-${Date.now()}-${file.originalname}`);
-  },
-});
-const uploadProfile = multer({
-  storage: profileStorage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-});
+
+// Helper to upload profile image to Supabase
+async function uploadProfileToSupabase(file) {
+  if (!file) return null;
+  const ext = file.originalname.split('.').pop();
+  const filePath = `profile/${Date.now()}_${Math.round(Math.random() * 1e9)}.${ext}`;
+  const { data, error } = await supabase.storage.from('magrahat').upload(filePath, file.buffer, {
+    contentType: file.mimetype,
+    upsert: false,
+  });
+  if (error) throw new Error(error.message);
+  const { data: publicUrlData } = supabase.storage.from('magrahat').getPublicUrl(filePath);
+  return publicUrlData.publicUrl;
+}
 
 // Initialize Nodemailer transporter
 const transporter = nodemailer.createTransport({
@@ -234,11 +238,14 @@ router.put(
   async (req, res) => {
     try {
       const db = await connectToDatabase();
-      const profileImage = req.file ? `/uploads/${req.file.filename}` : null;
-
-      // Update query with profile image
+      // Upload to Supabase if file provided
+      let profileImage = null;
+      if (req.file) {
+        profileImage = await uploadProfileToSupabase(req.file);
+      }
+      // Update query with profile image (only update if new image provided)
       await db.query(
-        "UPDATE users SET specialization = ?, PhoneNumber = ?, profileImage = ? WHERE artisanId = ?",
+        "UPDATE users SET specialization = ?, PhoneNumber = ?, profileImage = COALESCE(?, profileImage) WHERE artisanId = ?",
         [
           req.body.specialization,
           req.body.PhoneNumber,
@@ -246,13 +253,11 @@ router.put(
           req.artisanId,
         ]
       );
-
       // Get updated profile
       const [[updatedProfile]] = await db.query(
         "SELECT username, specialization, PhoneNumber, artisanId, profileImage FROM users WHERE artisanId = ?",
         [req.artisanId]
       );
-
       res.status(200).json({
         message: "Profile updated successfully",
         profile: {

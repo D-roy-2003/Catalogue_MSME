@@ -133,7 +133,7 @@ const Navbar = () => {
                 >
                   {profileImage ? (
                     <img
-                      src={`${backendUrl}${profileImage}`}
+                      src={profileImage}
                       alt="Profile"
                       className="w-8 h-8 rounded-full object-cover"
                     />
