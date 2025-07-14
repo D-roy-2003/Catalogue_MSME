@@ -139,7 +139,7 @@ function ProductsSection() {
             >
               <ProductCard
                 id={product.id}
-                image={`${backendUrl}${product.mainImage}`}
+                image={product.image1}
                 title={product.productName}
                 artisan={product.artisanName}
                 price={product.productPrice}
