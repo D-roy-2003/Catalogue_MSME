@@ -1,6 +1,6 @@
 //backend/routes/authRouter.js
 import express from "express";
-import { connectToDatabase } from "../lib/db.js";
+import { pool } from "../lib/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
@@ -57,16 +57,15 @@ router.post("/signup", async (req, res) => {
       .json({ message: "Oops! The passwords don't match." });
   }
   try {
-    const db = await connectToDatabase();
     // Verify Admin Pass Key
-    const [adminRows] = await db.query(
+    const [adminRows] = await pool.query(
       "SELECT adminPassKey FROM admindata LIMIT 1"
     );
     if (!adminRows.length || adminRows[0].adminPassKey !== adminPassKey) {
       return res.status(403).json({ message: "Invalid Admin Pass Key." });
     }
     // Check if the Mobile Number already exists
-    const [existing] = await db.query(
+    const [existing] = await pool.query(
       "SELECT * FROM users WHERE PhoneNumber = ?",
       [PhoneNumber]
     );
@@ -77,18 +76,18 @@ router.post("/signup", async (req, res) => {
     }
     const username = `${firstName} ${lastName}`;
     const hashed = await bcrypt.hash(password, 10);
-    const [result] = await db.query(
+    const [result] = await pool.query(
       "INSERT INTO users (username, PhoneNumber, password) VALUES (?, ?, ?)",
       [username, PhoneNumber, hashed]
     );
     // Generate artisanId from insertId
     const generatedArtisanId = `ART${String(result.insertId).padStart(5, "0")}`;
-    await db.query("UPDATE users SET artisanId = ? WHERE id = ?", [
+    await pool.query("UPDATE users SET artisanId = ? WHERE id = ?", [
       generatedArtisanId,
       result.insertId,
     ]);
 
-    const [[newUser]] = await db.query("SELECT * FROM users WHERE id = ?", [
+    const [[newUser]] = await pool.query("SELECT * FROM users WHERE id = ?", [
       result.insertId,
     ]);
     // Sign both id and artisanId into the token:
@@ -104,7 +103,7 @@ router.post("/signup", async (req, res) => {
       artisanId: newUser.artisanId,
     });
   } catch (err) {
-    return res.status(500).json({ message: `Error: ${err.message}` });
+    return res.status(500).json({ message: `Server error: ${err.message}` });
   }
 });
 
@@ -112,8 +111,7 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { PhoneNumber, password } = req.body;
   try {
-    const db = await connectToDatabase();
-    const [users] = await db.query(
+    const [users] = await pool.query(
       "SELECT * FROM users WHERE PhoneNumber = ?",
       [PhoneNumber]
     );
@@ -149,8 +147,7 @@ router.post("/admin/login", async (req, res) => {
   // <-- Ensure this line is exactly like this
   const { adminId, adminPassword } = req.body;
   try {
-    const db = await connectToDatabase();
-    const [admins] = await db.query(
+    const [admins] = await pool.query(
       "SELECT * FROM admindata WHERE adminId = ?",
       [adminId]
     );
@@ -210,9 +207,8 @@ export const verifyToken = (req, res, next) => {
 
 router.get("/profile", verifyToken, async (req, res) => {
   try {
-    const db = await connectToDatabase();
     // Add profileImage to the SELECT query
-    const [[profile]] = await db.query(
+    const [[profile]] = await pool.query(
       "SELECT username AS name, specialization, PhoneNumber AS contact, artisanId, profileImage FROM users WHERE artisanId = ?",
       [req.artisanId]
     );
@@ -237,14 +233,13 @@ router.put(
   uploadProfile.single("profileImage"),
   async (req, res) => {
     try {
-      const db = await connectToDatabase();
       // Upload to Supabase if file provided
       let profileImage = null;
       if (req.file) {
         profileImage = await uploadProfileToSupabase(req.file);
       }
       // Update query with profile image (only update if new image provided)
-      await db.query(
+      await pool.query(
         "UPDATE users SET specialization = ?, PhoneNumber = ?, profileImage = COALESCE(?, profileImage) WHERE artisanId = ?",
         [
           req.body.specialization,
@@ -254,7 +249,7 @@ router.put(
         ]
       );
       // Get updated profile
-      const [[updatedProfile]] = await db.query(
+      const [[updatedProfile]] = await pool.query(
         "SELECT username, specialization, PhoneNumber, artisanId, profileImage FROM users WHERE artisanId = ?",
         [req.artisanId]
       );
@@ -282,8 +277,7 @@ router.put(
 router.post("/forgot-password/artisan", async (req, res) => {
   const { artisanId, phoneNumber } = req.body;
   try {
-    const db = await connectToDatabase();
-    const [users] = await db.query(
+    const [users] = await pool.query(
       "SELECT * FROM users WHERE artisanId = ? AND PhoneNumber = ?",
       [artisanId, phoneNumber]
     );
@@ -293,7 +287,7 @@ router.post("/forgot-password/artisan", async (req, res) => {
         .status(404)
         .json({ success: false, message: "User not found" });
 
-    await db.query("UPDATE users SET forgetpassword = TRUE WHERE id = ?", [
+    await pool.query("UPDATE users SET forgetpassword = TRUE WHERE id = ?", [
       users[0].id,
     ]);
 
@@ -348,10 +342,7 @@ const sendWithRetry = async (mailOptions, retries = 3) => {
 router.post("/forgot-password/admin", async (req, res) => {
   const { adminId, email } = req.body;
   try {
-    const db = await connectToDatabase();
-
-    // 1. Verify admin exists
-    const [admins] = await db.query(
+    const [admins] = await pool.query(
       "SELECT * FROM admindata WHERE adminId = ?",
       [adminId]
     );
@@ -382,13 +373,13 @@ router.post("/forgot-password/admin", async (req, res) => {
 
     // 5. Hash and update password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await db.query("UPDATE admindata SET adminPassword = ? WHERE adminId = ?", [
+    await pool.query("UPDATE admindata SET adminPassword = ? WHERE adminId = ?", [
       hashedPassword,
       adminId,
     ]);
 
     // 6. Verify update
-    const [updatedAdmin] = await db.query(
+    const [updatedAdmin] = await pool.query(
       "SELECT adminId FROM admindata WHERE adminId = ?",
       [adminId]
     );

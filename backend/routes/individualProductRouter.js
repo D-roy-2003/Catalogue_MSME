@@ -1,13 +1,12 @@
 import express from "express";
-import { connectToDatabase } from "../lib/db.js";
+import { pool } from "../lib/db.js";
 
 const router = express.Router();
 
 // Get single product details
 router.get("/:productId", async (req, res) => {
   try {
-    const db = await connectToDatabase();
-    const [products] = await db.query(
+    const [products] = await pool.query(
       `SELECT 
         p.*, 
         u.username,
@@ -46,8 +45,7 @@ router.get("/:productId", async (req, res) => {
 // Get related products with all image fields
 router.get("/:productId/related", async (req, res) => {
   try {
-    const db = await connectToDatabase();
-    const [products] = await db.query(
+    const [products] = await pool.query(
       `SELECT 
         id,
         artisanId,

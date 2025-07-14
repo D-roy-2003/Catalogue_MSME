@@ -1,15 +1,13 @@
 import express from "express";
-import { connectToDatabase } from "../lib/db.js";
+import { pool } from "../lib/db.js";
 
 const router = express.Router();
 
 // Get random featured products
 router.get("/featured-products", async (req, res) => {
   try {
-    const db = await connectToDatabase();
-    
     // First, count how many non-dummy products exist
-    const [countResult] = await db.query(`
+    const [countResult] = await pool.query(`
       SELECT COUNT(*) as count 
       FROM products p
       JOIN users u ON p.artisanId = u.artisanId
@@ -24,7 +22,7 @@ router.get("/featured-products", async (req, res) => {
     
     if (nonDummyCount >= minRealProductsRequired) {
       // Get only non-dummy products if we have enough
-      [products] = await db.query(`
+      [products] = await pool.query(`
         SELECT 
           p.id,
           p.productName,
@@ -45,7 +43,7 @@ router.get("/featured-products", async (req, res) => {
       `, [sliderItemsNeeded]);
     } else {
       // Get all available products including dummy ones
-      [products] = await db.query(`
+      [products] = await pool.query(`
         SELECT 
           p.id,
           p.productName,

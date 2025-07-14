@@ -1,13 +1,12 @@
 import express from "express";
-import { connectToDatabase } from "../lib/db.js";
+import { pool } from "../lib/db.js";
 
 const router = express.Router();
 
 // Get all feedback
 router.get("/", async (req, res) => {
   try {
-    const db = await connectToDatabase();
-    const [feedbacks] = await db.query(`
+    const [feedbacks] = await pool.query(`
       SELECT 
         f.*,
         CASE 
@@ -29,8 +28,7 @@ router.get("/", async (req, res) => {
 // Get feedback by artisanId
 router.get("/:artisanId", async (req, res) => {
   try {
-    const db = await connectToDatabase();
-    const [feedbacks] = await db.query(
+    const [feedbacks] = await pool.query(
       `
       SELECT 
         f.*,
@@ -61,8 +59,7 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    const db = await connectToDatabase();
-    await db.query(
+    await pool.query(
       "INSERT INTO feedback (name, phonenumber, artisanName, message) VALUES (?, ?, ?, ?)",
       [name, phonenumber, artisanName || null, feedback]
     );

@@ -1,5 +1,5 @@
 import express from "express";
-import { connectToDatabase } from "../lib/db.js";
+import { pool } from "../lib/db.js";
 import { verifyToken } from "./authRouter.js";
 
 const router = express.Router();
@@ -7,8 +7,7 @@ const router = express.Router();
 // Get all listed artisans
 router.get("/artisans", async (req, res) => {
   try {
-    const db = await connectToDatabase();
-    const [artisans] = await db.query(`
+    const [artisans] = await pool.query(`
       SELECT u.username, u.artisanId, u.profileImage
       FROM users u
       WHERE u.listed = true
@@ -25,8 +24,7 @@ router.get("/artisans", async (req, res) => {
 // Add proper artisan products route
 router.get("/artisans/:artisanId/products", async (req, res) => {
   try {
-    const db = await connectToDatabase();
-    const [products] = await db.query(
+    const [products] = await pool.query(
       `SELECT * FROM products 
        WHERE artisanId = ? AND is_listed = true`,
       [req.params.artisanId]
@@ -41,8 +39,7 @@ router.get("/artisans/:artisanId/products", async (req, res) => {
 // Get artisan by ID
 router.get("/artisans/:artisanId", async (req, res) => {
   try {
-    const db = await connectToDatabase();
-    const [artisans] = await db.query(
+    const [artisans] = await pool.query(
       "SELECT * FROM users WHERE artisanId = ?",
       [req.params.artisanId]
     );
@@ -61,16 +58,15 @@ router.get("/artisans/:artisanId", async (req, res) => {
 
 router.delete("/:productId", verifyToken, async (req, res) => {
   try {
-    const db = await connectToDatabase();
     // First, get artisanId to verify ownership if needed
-    const [product] = await db.query(
+    const [product] = await pool.query(
       "SELECT artisanId FROM products WHERE id = ?",
       [req.params.productId]
     );
 
     // Optional: Add admin check or ownership verification here
 
-    const [result] = await db.query("DELETE FROM products WHERE id = ?", [
+    const [result] = await pool.query("DELETE FROM products WHERE id = ?", [
       req.params.productId,
     ]);
 

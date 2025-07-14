@@ -1,13 +1,12 @@
 import express from "express";
-import { connectToDatabase } from "../lib/db.js";
+import { pool } from "../lib/db.js";
 
 const router = express.Router();
 
 // Get all artisans (public route)
 router.get("/artisans", async (req, res) => {
   try {
-    const connection = await connectToDatabase();
-    const [users] = await connection.query(
+    const [users] = await pool.query(
       "SELECT id, username as name, artisanId, PhoneNumber as contact, specialization FROM users WHERE artisanId IS NOT NULL"
     );
     
@@ -32,8 +31,7 @@ router.get("/artisans", async (req, res) => {
 router.delete("/artisans/:artisanId", async (req, res) => {
   try {
     const { artisanId } = req.params;
-    const connection = await connectToDatabase();
-    await connection.query("DELETE FROM users WHERE artisanId = ?", [artisanId]);
+    await pool.query("DELETE FROM users WHERE artisanId = ?", [artisanId]);
     res.json({ success: true, message: "Artisan deleted successfully" });
   } catch (error) {
     console.error("Delete error:", error);
@@ -46,9 +44,8 @@ router.put("/artisans/:artisanId", async (req, res) => {
   try {
     const { artisanId } = req.params;
     const { name, contact, specialization, password } = req.body;
-    const connection = await connectToDatabase();
     
-    await connection.query(
+    await pool.query(
       `UPDATE users SET 
         username = ?,
         PhoneNumber = ?,

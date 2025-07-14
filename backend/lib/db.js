@@ -11,40 +11,39 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
-let connection;
+// Create a MySQL connection pool
+export const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
+  charset: "utf8mb4",
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
 
 export const connectToDatabase = async () => {
   try {
-    if (!connection) {
-      // Connect without database first
-      const tempConnection = await mysql.createConnection({
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-      });
+    // Connect without database first to ensure DB exists
+    const tempConnection = await mysql.createConnection({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      port: process.env.DB_PORT,
+    });
 
-      // Create database if not exists
-      await tempConnection.query(
-        `CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\` 
-         CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
-      );
-      await tempConnection.end();
+    await tempConnection.query(
+      `CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\` 
+       CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
+    );
+    await tempConnection.end();
 
-      // Connect to the database
-      connection = await mysql.createConnection({
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        port: process.env.DB_PORT, // <-- add this line
-        charset: "utf8mb4",
-      });
-
-      // Create tables
-      await createTables();
-      console.log("Database initialized with empty tables");
-    }
-    return connection;
+    // Use pool to create tables
+    await createTables();
+    console.log("Database initialized with empty tables");
+    return pool;
   } catch (err) {
     console.error("Database connection error:", err);
     throw err;
@@ -53,7 +52,7 @@ export const connectToDatabase = async () => {
 
 async function createTables() {
   // Users table
-  await connection.query(`
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id INT AUTO_INCREMENT PRIMARY KEY,
       username VARCHAR(255) NOT NULL,
@@ -72,7 +71,7 @@ async function createTables() {
   `);
 
   // Products table
-  await connection.query(`
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS products (
       id INT AUTO_INCREMENT PRIMARY KEY,
       artisanId VARCHAR(50) NOT NULL,
@@ -105,7 +104,7 @@ async function createTables() {
   `);
 
   // Feedback table
-  await connection.query(`
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS feedback (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
@@ -120,7 +119,7 @@ async function createTables() {
   `);
 
   // Admin table
-  await connection.query(`
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS admindata (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) DEFAULT NULL,
@@ -141,12 +140,12 @@ async function createTables() {
 }
 
 async function addDefaultAdmin() {
-  const [admins] = await connection.query(
+  const [admins] = await pool.query(
     "SELECT COUNT(*) as count FROM admindata"
   );
   if (admins[0].count === 0) {
     const hashedPassword = await bcrypt.hash("admin2003", 10);
-    await connection.query(
+    await pool.query(
       `INSERT INTO admindata (adminId, adminPassword, adminPassKey)
        VALUES ('admin123', ?, ?)`,
       [hashedPassword, process.env.ADMIN_PASS_KEY || "ADMIN123"]
@@ -163,8 +162,7 @@ export const supabase = createClient(
 
 process.on("unhandledRejection", (err) => {
   if (err.code === "PROTOCOL_CONNECTION_LOST") {
-    console.error("Database connection was closed. Reconnecting...");
-    connection = null;
+    console.error("Database connection was closed. Pool will handle reconnection.");
   } else {
     console.error("Unhandled database error:", err);
   }
