@@ -240,7 +240,7 @@ function ContactUs() {
                 <div className="border-t border-blue-400 pt-5">
                   <h3 className="font-medium text-blue-100">Need Immediate Help?</h3>
                   <p className="mt-1 text-blue-50">
-                    Call our support line at <span className="font-semibold">+1 (555) 123-4567</span> for urgent inquiries.
+                    Call our support line at <span className="font-semibold">+91-6294769382</span> for urgent inquiries.
                   </p>
                 </div>
               </div>
