@@ -27,7 +27,7 @@ function ImpactSection() {
             <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-indigo-100 opacity-50"></div>
             <div className="relative z-10">
               <div className="text-5xl font-bold text-indigo-600 mb-4">
-                2000+
+                1500+
               </div>
               <p className="text-gray-700 font-medium text-lg">
                 Active Artisans
@@ -42,7 +42,7 @@ function ImpactSection() {
             <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-purple-100 opacity-50"></div>
             <div className="relative z-10">
               <div className="text-5xl font-bold text-purple-600 mb-4">
-                ₹50Cr
+                ₹11Cr
               </div>
               <p className="text-gray-700 font-medium text-lg">
                 Annual Revenue
@@ -56,8 +56,8 @@ function ImpactSection() {
           <div className="bg-white rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 p-8 border-t-4 border-blue-500 relative overflow-hidden">
             <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-blue-100 opacity-50"></div>
             <div className="relative z-10">
-              <div className="text-5xl font-bold text-blue-600 mb-4">15%</div>
-              <p className="text-gray-700 font-medium text-lg">Annual Growth</p>
+              <div className="text-5xl font-bold text-blue-600 mb-4">410</div>
+              <p className="text-gray-700 font-medium text-lg">Stakeholders</p>
               <p className="text-gray-500 text-sm mt-2">
                 Consistent expansion year after year
               </p>
@@ -70,7 +70,7 @@ function ImpactSection() {
             "The silver filigree industry continues to be a significant
             contributor to Magrahat's economy, providing employment and
             preserving cultural heritage while adapting to modern market
-            demands."
+            demands.The present market share of these artisans is approximately 1.5 % of the total Indian silver filigree market."
           </p>
         </div>
       </div>

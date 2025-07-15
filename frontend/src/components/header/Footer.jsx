@@ -70,13 +70,13 @@ function Footer() {
             <p>
               Phone:{" "}
               <a
-                href="tel:+911234567890"
+                href="tel:+916294769382"
                 className="hover:text-white transition-colors duration-200"
               >
-                +91 1234567890
+                +91 6294769382
               </a>
             </p>
-            <p>Address: Magrahat, West Bengal</p>
+            <p>Address: Magrahat, South 24 Parganas, West Bengal</p>
           </address>
         </div>
 
@@ -166,8 +166,6 @@ function Footer() {
     © 2025 Magrahat E-catalogue. All Rights Reserved.
   </p>
 </div>
-
-
     </footer>
   );
 }

@@ -25,12 +25,12 @@ function ContactSection() {
                   Workshop Address:
                 </h4>
                 <p className="text-gray-600 text-1xl">
-                  Magrahat, West Bengal, India
+                  Magrahat, South 24 Parganas, West Bengal, India
                 </p>
               </div>
               <div>
                 <h4 className="font-medium text-gray-700 text-1xl">Phone:</h4>
-                <p className="text-gray-600 text-1xl">+91 XXXXXXXXXX</p>
+                <p className="text-gray-600 text-1xl">+91 6294769382</p>
               </div>
               <div>
                 <h4 className="font-medium text-gray-700 text-1xl">Email:</h4>

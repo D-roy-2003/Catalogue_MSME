@@ -20,15 +20,18 @@ function HistorySection() {
           <div className="w-full md:w-3/5">
             <article className="text-gray-600">
               <p className="text-base lg:text-lg mb-6 leading-relaxed">
-                Magrahat's rich history dates back to ancient times, where it
-                flourished as a center of art and culture under various
-                dynasties. The region's strategic location along historic trade
-                routes made it a melting pot of artistic influences.
+               In India, use of silver filigree/ jewellery has been very popular 
+               within a certain class of people who can't afford to pay price of 
+               gold for similar items. Silver filigree manufacturing activities 
+               started few hundred years ago in various villages of Cuttack district of Orissa. 
+               This beautiful art of manufacturing handicrafts was brought from Cuttack to villages of 
+               Magrahat II Block in our state, almost 65 years back.
               </p>
               <p className="text-base lg:text-lg leading-relaxed">
-                The legacy of craftsmanship, particularly in silver filigree
-                work, has been passed down through generations, making Magrahat
-                a living museum of artistic excellence.
+                Although the first activity of silver filigree started at villages of Moukhali and Alida, 
+                subsequently it has spread over to sixteen surrounding villages of Magrahat II block within 
+                the last 65 years. The artisans of this locality have been famous all over India for the 
+                quality and intricacy of their silver filigree items and the industry grew to a few thousand artisans. 
               </p>
             </article>
           </div>
@@ -37,7 +40,7 @@ function HistorySection() {
           <div className="w-full md:w-2/5">
             <div className="aspect-square max-w-sm mx-auto md:mx-0">
               <img
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/cc5e627a658559614f429b8e6de1f7f583585dc3?placeholderIfAbsent=true&apiKey=6db93a0a2eaa482cb9c3ed3428be7ade"
+                src="/fire1.jpg"
                 alt="Historical artifacts from Magrahat"
                 className="w-full h-full rounded-lg shadow-lg object-cover transition-all duration-300 hover:translate-y-[-5px] hover:shadow-xl"
               />

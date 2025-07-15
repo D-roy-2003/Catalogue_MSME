@@ -26,7 +26,7 @@ function ArtSection() {
           <div className="group relative overflow-hidden rounded-xl sm:rounded-2xl shadow-lg transition-all duration-500 hover:shadow-2xl">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-blue-900/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
             <img
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/0666b24d815016675e600d75c2719eaaff90a8e4?placeholderIfAbsent=true&apiKey=6db93a0a2eaa482cb9c3ed3428be7ade"
+              src="/necklace1.jpg"
               alt="Silver filigree artwork sample"
               className="w-full h-full object-cover aspect-square transform transition-transform duration-700 group-hover:scale-110"
             />
@@ -43,7 +43,7 @@ function ArtSection() {
           <div className="group relative overflow-hidden rounded-xl sm:rounded-2xl shadow-lg transition-all duration-500 hover:shadow-2xl">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-blue-900/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
             <img
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/c4a49b955f134086c1d086d56c40e009ac47754a?placeholderIfAbsent=true&apiKey=6db93a0a2eaa482cb9c3ed3428be7ade"
+              src="/earrings1.jpg"
               alt="Silver filigree crafting process"
               className="w-full h-full object-cover aspect-square transform transition-transform duration-700 group-hover:scale-110"
             />
@@ -60,7 +60,7 @@ function ArtSection() {
           <div className="group relative overflow-hidden rounded-xl sm:rounded-2xl shadow-lg transition-all duration-500 hover:shadow-2xl sm:col-span-2 md:col-span-1">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-blue-900/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
             <img
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/998d4b1414aac8718e0147e1fb5bd58ad642a4df?placeholderIfAbsent=true&apiKey=6db93a0a2eaa482cb9c3ed3428be7ade"
+              src="/necklace2.jpg"
               alt="Detailed silver filigree design"
               className="w-full h-full object-cover aspect-square transform transition-transform duration-700 group-hover:scale-110"
             />

@@ -26,7 +26,7 @@ function CommunitySection() {
           {/* Card 1 */}
           <article className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6">
             <img
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/6a7f9006d1c676ce56dfe7129255aeae3d2a2d01?placeholderIfAbsent=true&apiKey=6db93a0a2eaa482cb9c3ed3428be7ade"
+              src="/artisan1.jpg"
               alt="Artisan working on silver filigree"
               className="rounded-xl w-full aspect-square object-cover transform group-hover:-translate-y-1 transition duration-300"
             />
@@ -34,16 +34,14 @@ function CommunitySection() {
               The Artisan's Journey
             </h3>
             <p className="mt-4 text-gray-600 text-lg leading-relaxed">
-              Behind every piece of silver filigree lies a story of dedication,
-              passion, and artistic excellence. Our artisans preserve
-              traditional techniques while embracing modern design.
+              The first activity of silver filigree started at villages of Moukhali and Alida, subsequently it has spread over to sixteen surrounding villages of Magrahat II block within the last 65 years .
             </p>
           </article>
 
           {/* Card 2 */}
           <article className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6">
             <img
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/8d8ded6a4d0cbf51dba913f873415875ec427fcc?placeholderIfAbsent=true&apiKey=6db93a0a2eaa482cb9c3ed3428be7ade"
+              src="/artisan2.jpg"
               alt="Master artisan teaching apprentice"
               className="rounded-xl w-full aspect-square object-cover transform group-hover:-translate-y-1 transition duration-300"
             />
