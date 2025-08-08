@@ -43,7 +43,7 @@ JWT_KEY=your_random_secret_key
 CORS_ORIGIN=http://localhost:5173
 SENDGRID_API_KEY=your_sendgrid_key
 EMAIL_FROM=your_verified_email@domain.com
-ADMIN_PASS_KEY=ADMIN123
+
 REACT_APP_SUPABASE_URL=your_supabase_url
 REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
 NODE_ENV=development
