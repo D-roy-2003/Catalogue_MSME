@@ -46,6 +46,17 @@ function ContactUs() {
       return;
     }
 
+    // Validate phone number length
+    if (phoneNumber.length !== 10) {
+      Swal.fire({
+        icon: "warning",
+        title: "Invalid Phone Number",
+        text: "Phone number must be exactly 10 digits.",
+      });
+      setIsContactSubmitting(false);
+      return;
+    }
+
     // Add phone number to form data
     formData.append("phone", fullPhoneNumber);
 
@@ -168,12 +179,19 @@ function ContactUs() {
                       <input
                         type="tel"
                         value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        placeholder="123 456 7890"
+                        onChange={(e) => {
+                          // Only allow digits and limit to 10 characters
+                          const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                          setPhoneNumber(value);
+                        }}
+                        placeholder="1234567890"
                         required
+                        maxLength={10}
+                        pattern="[0-9]{10}"
                         className="flex-1 px-4 py-3 border-none focus:ring-0"
                       />
                     </div>
+                    <p className="text-xs text-gray-500 mt-1">Phone number must be exactly 10 digits</p>
                   </div>
 
                   <div>
