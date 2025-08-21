@@ -24,7 +24,7 @@ cd backend
 npm install
 
 # Frontend dependencies
-cd ../frontend
+cd frontend
 npm install
 ```
 
@@ -118,3 +118,4 @@ It aims to empower local artisans by bringing traditional craftsmanship into the
 - **Email**: SendGrid, Nodemailer
 - **File Storage**: Supabase
 - **Deployment**: Vercel (frontend), Railway/Vercel (backend)
+
