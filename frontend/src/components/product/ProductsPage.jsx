@@ -347,7 +347,31 @@ function ArtisanSection({ artisan, index }) {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Mobile/Tablet: Horizontal scrollable layout */}
+      <div className="md:hidden">
+        <div className="relative">
+          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+            {products.map((product) => (
+              <div key={product?.id || Math.random()} className="flex-shrink-0 w-72">
+                <ProductCard product={product} color={color} />
+              </div>
+            ))}
+          </div>
+          {/* Scroll indicator dots */}
+          {products.length > 1 && (
+            <div className="flex justify-center mt-4 gap-2">
+              {products.map((_, idx) => (
+                <div
+                  key={idx}
+                  className="w-2 h-2 rounded-full bg-gray-300"
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      {/* Desktop: Grid layout (unchanged) */}
+      <div className="hidden md:grid md:grid-cols-3 gap-6">
         {products.map((product) => (
           <ProductCard key={product?.id || Math.random()} product={product} color={color} />
         ))}
