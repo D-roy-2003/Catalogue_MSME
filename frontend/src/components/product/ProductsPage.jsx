@@ -520,6 +520,12 @@ function ProductsPage() {
     searchQuery: "",
   });
 
+  // Calculate active filters count for mobile badge
+  const activeFiltersCount =
+    filters.categories.length +
+    filters.materials.length +
+    (filters.priceRange < 100000 ? 1 : 0);
+
   const resetFilters = () => {
     setFilters({
       categories: [],
@@ -568,6 +574,24 @@ function ProductsPage() {
                     clipRule="evenodd"
                   />
                 </svg>
+              </div>
+              {/* Mobile-only Filters toggle */}
+              <div className="md:hidden mt-3">
+                <button
+                  type="button"
+                  onClick={() => setFilterOpen((prev) => !prev)}
+                  className="inline-flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white shadow-sm active:shadow outline-none"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 01.8 1.6l-4.2 6.3V16a1 1 0 01-1.447.894l-3-1.5A1 1 0 017 14.5v-2.6L3.2 6.6A1 1 0 013 5z" clipRule="evenodd" />
+                  </svg>
+                  {filterOpen ? "Hide Filters" : "Show Filters"}
+                  {activeFiltersCount > 0 && (
+                    <span className="ml-1 inline-flex items-center justify-center text-xs font-medium w-5 h-5 rounded-full bg-indigo-600 text-white">
+                      {activeFiltersCount}
+                    </span>
+                  )}
+                </button>
               </div>
             </div>
           </div>
